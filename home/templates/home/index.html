@@ -1,0 +1,222 @@
+{% load static %}
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Calculation</title>
+    <link rel="stylesheet" href="{% static 'home/style.css' %}">
+    <link rel="icon" href="{% static 'login/logo.png' %}" type="image/png">
+    <style>
+        input[type="text"] {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div class="Logout">
+        <p><a href=""><u>Logout</u></a></p>
+        </div>
+        <h2>Tax Calculation</h2>
+        <div class="row">
+            <div class="form-group">
+                <label for="netSalary">Net Salary</label>
+                <input type="text" id="netSalary" name="net_salary" placeholder="Calculated Net Salary">
+            </div>
+            <div class="form-group">
+                <label for="grossSalary">Gross Salary</label>
+                <input type="text" id="grossSalary" name="gross_salary" placeholder="Enter Gross Salary">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group checkbox-container">
+                <label for="socialInsurance">Social Insurance</label>
+                <div class="input-checkbox-group">
+                    <input type="text" id="socialInsurance" name="social_option" placeholder="Enter Social Insurance">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="total" name="total" onclick="checkOnlyOne(this)"> Total
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="30percent" name="30percent" onclick="checkOnlyOne(this)"> 30%
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="25percent" name="25percent" onclick="checkOnlyOne(this)"> 25%
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="monthlyTax">Monthly Tax Value</label>
+                <input type="text" id="monthlyTax" readonly>
+            </div>
+            <div class="form-group">
+                <label for="employeeSocial">Employees for Social</label>
+                <input type="text" id="employeeSocial" readonly>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="familiesMartyrs">Families Martyrs</label>
+                <input type="text" id="familiesMartyrs" readonly>
+            </div>
+            <div class="form-group">
+                <label for="companySocial">Company for Social</label>
+                <input type="text" id="companySocial" readonly>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="EmployeeCost">Employee Cost</label>
+                <input type="text" id="EmployeeCost" readonly>
+            </div>
+            <div class="form-group">
+                <label for="level">Level Tax</label>
+                <input type="text" id="level" readonly>
+            </div>
+        </div>
+
+        <div class="row">
+            <input type="button" value="Calculate" onclick="calculate()">
+            <input type="reset" value="Restart" onclick="resetForm()">
+        </div>
+    </form>
+
+    <script>
+        function checkOnlyOne(checkbox) {
+            const checkboxes = document.querySelectorAll('.input-checkbox-group input[type="checkbox"]');
+            checkboxes.forEach((cb) => {
+                if (cb !== checkbox) cb.checked = false;
+            });
+        }
+
+        function calculate() {
+            const grossSalary = parseFloat(document.getElementById("grossSalary").value.replace(/,/g, '')) || 0;
+            const netSalary = parseFloat(document.getElementById("netSalary").value.replace(/,/g, '')) || 0;
+
+            if (grossSalary > 0 && netSalary === 0) {
+                calculateFromGross(grossSalary);
+            } else if (grossSalary === 0 && netSalary > 0) {
+                reverseCalculate();
+            } else {
+                alert("يرجى إدخال إما الراتب الإجمالي أو الصافي فقط.");
+            }
+        }
+
+        function calculateFromGross(grossSalary) {
+            const socialInsurance = calculateSocialInsurance(grossSalary);
+            const monthlyTax = Tax(grossSalary, socialInsurance);
+            const familiesMartyrs = grossSalary * 0.0005;
+            const employeeSocial = socialInsurance * 0.11;
+            const companySocial = socialInsurance * 0.1875;
+            const netSalaryValue = grossSalary - (employeeSocial + monthlyTax + familiesMartyrs);
+            const employeeCost = grossSalary + companySocial;
+
+            document.getElementById("monthlyTax").value = monthlyTax.toFixed(2);
+            document.getElementById("employeeSocial").value = employeeSocial.toFixed(2);
+            document.getElementById("familiesMartyrs").value = familiesMartyrs.toFixed(2);
+            document.getElementById("companySocial").value = companySocial.toFixed(2);
+            document.getElementById("netSalary").value = netSalaryValue.toFixed(2);
+            document.getElementById("EmployeeCost").value = employeeCost.toFixed(2);
+            document.getElementById("socialInsurance").value = socialInsurance.toFixed(2);
+        }
+
+        function reverseCalculate() {
+            const netSalary = parseFloat(document.getElementById("netSalary").value.replace(/,/g, '')) || 0;
+
+            if (netSalary > 0) {
+                let estimatedGross = netSalary;
+                let iterations = 100;
+
+                while (iterations--) {
+                    const socialInsurance = calculateSocialInsurance(estimatedGross);
+                    const monthlyTax = Tax(estimatedGross, socialInsurance);
+                    const familiesMartyrs = estimatedGross * 0.0005;
+                    const employeeSocial = socialInsurance * 0.11;
+
+                    const calculatedNetSalary = estimatedGross - (employeeSocial + monthlyTax + familiesMartyrs);
+
+                    if (Math.abs(calculatedNetSalary - netSalary) < 0.005) {
+                        break;
+                    }
+
+                    estimatedGross += (netSalary - calculatedNetSalary) / 2;
+                }
+
+                document.getElementById("grossSalary").value = formatCurrency(estimatedGross);
+                calculateFromGross(estimatedGross);
+            }
+        }
+
+        function calculateSocialInsurance(grossSalary) {
+            const totalChecked = document.getElementById("total").checked;
+            const percent30Checked = document.getElementById("30percent").checked;
+            const percent25Checked = document.getElementById("25percent").checked;
+
+            let socialInsurance = 0;
+            if (totalChecked) {
+                socialInsurance = Math.min(grossSalary, 12600);
+            } else if (percent30Checked) {
+                socialInsurance = Math.min(grossSalary / 1.3, 12600);
+            } else if (percent25Checked) {
+                socialInsurance = Math.min(grossSalary / 1.25, 12600);
+            }
+
+            return socialInsurance;
+        }
+
+        function Tax(income, insurances) {
+            insurances = (insurances * 0.11) * 12;
+            income = (income * 12) - (20000 + insurances);
+            income = Math.floor(income / 10) * 10;
+
+            let tax = 0;
+            if (income <= 40000) {
+                tax = 0;
+            } else if (income <= 55000) {
+                tax = (income - 40000) * 0.1;
+            } else if (income <= 70000) {
+                tax = (income - 55000) * 0.15 + 1500;
+            } else if (income <= 200000) {
+                tax = (income - 70000) * 0.2 + 3750;
+            } else if (income <= 400000) {
+                tax = (income - 200000) * 0.225 + 29750;
+            } else if (income <= 600000) {
+                tax = (income - 400000) * 0.25 + 75000;
+            } else if (income <= 1200000) {
+                tax = (income - 600000) * 0.25 + 125000;
+            } else {
+                tax = (income - 1200000) * 0.275 + 300000;
+            }
+
+            const levels = [
+                { max: 600000, label: "LEVEL ONE" },
+                { max: 700000, label: "LEVEL TWO" },
+                { max: 800000, label: "LEVEL THREE" },
+                { max: 900000, label: "LEVEL FOUR" },
+                { max: 1200000, label: "LEVEL FIVE" },
+                { max: Infinity, label: "LEVEL SIX" }
+            ];
+            const level = levels.find(l => income <= l.max).label;
+            document.getElementById("level").value = level;
+
+            return tax / 12;
+        }
+
+        function resetForm() {
+            document.querySelectorAll("input[type=text]").forEach(input => input.value = '');
+            document.querySelectorAll("input[type=checkbox]").forEach(checkbox => checkbox.checked = false);
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat("en-US", { minimumFractionDigits: 2 }).format(value);
+        }
+    </script>
+</body>
+</html>

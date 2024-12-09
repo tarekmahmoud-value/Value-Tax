@@ -1,0 +1,160 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap");
+
+/* إعدادات عامة */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: url("FF_028.jpg") center center / cover no-repeat, #000;
+    color: #fff;
+    padding: 10px;
+}
+
+/* تنسيق النموذج */
+form {
+    width: 100%;
+    max-width: 500px;
+    padding: 30px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+
+a {
+    font-weight: bold;
+
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 20px;
+    color:  #f08080;
+    text-decoration: underline;
+}
+
+
+
+/* عنوان النموذج */
+h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* تنسيق الحقول */
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* تنسيق Checkboxes */
+.checkbox-container {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    padding: 5px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    gap: 0px;
+}
+
+.input-checkbox-group {
+    display: flex;
+    gap: 27px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* الأزرار */
+input[type="button"], input[type="reset"] {
+
+    width: 48%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+
+}
+
+input[type="button"] {
+    background-color: #007bff;
+    color: #fff;
+
+}
+
+input[type="reset"] {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+input[type="button"]:hover {
+    background-color: #0056b3;
+}
+
+input[type="reset"]:hover {
+    background-color: #5a6268;
+}
+
+/* Media Queries لتحسين الاستجابة */
+@media (max-width: 768px) {
+    form {
+        padding: 15px;
+    }
+
+    .row {
+        flex-direction: column;
+    }
+
+    input[type="button"], input[type="reset"] {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 20px;
+    }
+
+    input[type="text"] {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    input[type="button"], input[type="reset"] {
+        font-size: 12px;
+        padding: 8px;
+    }
+}

@@ -1,0 +1,45 @@
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VALUE Login</title>
+  <link rel="stylesheet" href="{% static 'login/style.css' %}">
+  <link rel="icon" href="{% static 'login/logo.png' %}" type="image/png">
+</head>
+<body>
+  <div class="wrapper">
+    {% if messages %}
+      <div class="error-messages">
+        {% for message in messages %}
+
+          <div class="alert alert-warning" style="max-width: 300px; word-wrap: break-word; white-space: pre-line;">
+                        {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <form action="" method="POST">
+      {% csrf_token %}
+      <h2>Login</h2>
+      <div class="input-field">
+        <input type="text" placeholder="Enter your mail" name="mail" required>
+      </div>
+      <div class="input-field">
+        <input type="password" placeholder="Enter your password" name="password" required>
+      </div>
+      <div class="forget">
+        <label for="remember">
+          <input type="checkbox" id="remember">
+          <p> Remember me </p>
+        </label>
+        <a href="tel:01143839788">Forgot password?</a>
+      </div>
+      <button type="submit">Log In</button>
+      <div class="register">
+        <p>Don't have an account ? <a href="register"><u>Register</u></a></p>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

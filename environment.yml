@@ -1,0 +1,9 @@
+name: my_environment  # اسم البيئة
+channels:
+  - defaults          # قنوات Conda لتحميل الحزم
+dependencies:
+  - python=3.8        # نسخة Python
+  - numpy             # مكتبة Numpy
+  - pandas            # مكتبة Pandas
+  - scikit-learn      # مكتبة Scikit-learn
+  - matplotlib        # مكتبة Matplotlib

@@ -1,0 +1,47 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches:
+      - main  # يتم تشغيل الـ Workflow عند تحديث الفرع الرئيسي
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # خطوة 1: سحب الكود من GitHub
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # خطوة 2: إعداد Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # خطوة 3: تسجيل الدخول إلى GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.VALUE_USERNAME }}  # استخدم اسم المستخدم من GitHub Secrets
+          password: ${{ secrets.VALUE_PASSWORD }}  # استخدم كلمة المرور أو التوكن من GitHub Secrets
+
+      # خطوة 4: بناء الصورة ورفعها إلى GitHub Container Registry
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/your_image_name:latest  # استخدم GitHub Container Registry هنا
+
+      # خطوة 5: نشر التطبيق (على خادم خارجي باستخدام SSH)
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            docker pull ghcr.io/${{ github.repository_owner }}/your_image_name:latest  # استخدم GitHub Container Registry هنا
+            docker stop django_app || true
+            docker rm django_app || true
+            docker run -d --name django_app -p 8000:8000 ghcr.io/${{ github.repository_owner }}/your_image_name:latest  # استخدم GitHub Container Registry هنا

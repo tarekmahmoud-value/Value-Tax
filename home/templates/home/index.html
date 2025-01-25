@@ -161,11 +161,11 @@
 
             let socialInsurance = 0;
             if (totalChecked) {
-                socialInsurance = Math.min(grossSalary, 12600);
+                socialInsurance = Math.min(grossSalary, 14500);
             } else if (percent30Checked) {
-                socialInsurance = Math.min(grossSalary / 1.3, 12600);
+                socialInsurance = Math.min(grossSalary / 1.3, 14500);
             } else if (percent25Checked) {
-                socialInsurance = Math.min(grossSalary / 1.25, 12600);
+                socialInsurance = Math.min(grossSalary / 1.25, 14500);
             }
 
             return socialInsurance;

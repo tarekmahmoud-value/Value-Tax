@@ -83,9 +83,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': "value_db",
-        'USER': "root",
+        'USER': "TAREK",
         'PASSWORD': "12345",
-        'HOST': "mysql",  # تأكد من تغيير هذا إلى اسم الخدمة التي وضعتها في الـ YAML
+        'HOST': "localhost",  # تأكد من تغيير هذا إلى اسم الخدمة التي وضعتها في الـ YAML
         'PORT': "3306",
     }
 }
